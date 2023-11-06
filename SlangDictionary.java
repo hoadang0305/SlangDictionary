@@ -1,15 +1,24 @@
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.List;
 
 public class SlangDictionary {
     private JFrame frame;
     private JPanel mainPanel;
     private CardLayout cardLayout;
-    private Dictionary mainDictionary;
+    private static Dictionary mainDictionary;
+    Dictionary suggest = new Dictionary();
 
     public SlangDictionary() {
         mainDictionary = new Dictionary();
@@ -139,51 +148,116 @@ public class SlangDictionary {
         titleLabel.setBorder(BorderFactory.createEmptyBorder(15, 0, 10, 0));
         topPanel.add(titleLabel);
         // bodyPanel
-        Dictionary suggest;
+
         // ---body1
         JPanel body1 = new JPanel();
+        JLabel titleInput = new JLabel("Enter Search Word", JLabel.CENTER);
+        titleInput.setFont(new Font("Arial", Font.BOLD, 12));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(8, 0, 8, 0));
         JTextField input = new JTextField();
         input.setPreferredSize(new Dimension(300, 27));
-        JButton search = new JButton("Search");
-        body1.add(input, BorderLayout.WEST);
-        body1.add(search, BorderLayout.EAST);
-        //
-        input.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                if (input.getText().length() > 0) {
-                    // suggest = mainDictionary.searchBySlang(input.getText());
-                }
-            }
-        });
+        body1.add(titleInput, BorderLayout.WEST);
+        body1.add(input, BorderLayout.EAST);
         // ---body2
         JPanel body2 = new JPanel();
         body2.setLayout(new BorderLayout());
         // ---------body2-1
-        // sau này sử dụng Jtextarea để có thể cuộn xuống
         JPanel body2_1 = new JPanel();
         body2_1.setLayout(new BorderLayout());
         JLabel suggestLabel = new JLabel("Suggest", JLabel.CENTER);
         suggestLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        suggestLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 6, 0));
+        suggestLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
         body2_1.add(suggestLabel, BorderLayout.NORTH);
-        JTextPane suggesTextPane = new JTextPane();
-        suggesTextPane.setPreferredSize(new Dimension(200, 300));
-        suggesTextPane.setBorder(BorderFactory.createLineBorder(Color.black, 1));
-        body2_1.add(suggesTextPane, BorderLayout.SOUTH);
+
+        JList<String> suggestList = new JList<>();
+        suggestList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        suggestList.setFixedCellHeight(38);
+        suggestList.setFixedCellWidth(190);
+        JScrollPane scrollPane = new JScrollPane(suggestList);
+        DefaultListModel<String> listSuggest = new DefaultListModel<>();
+        // xử lí listen của suggest
+        input.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                if (input.getText().length() > 0) {
+
+                    listSuggest.clear();
+                    suggest = mainDictionary.searchBySlang(input.getText());
+                    for (Map.Entry<String, Set<String>> entry : suggest.getDictionary().entrySet()) {
+                        listSuggest.addElement(entry.getKey());
+                    }
+                    suggestList.setModel(listSuggest);
+                } else {
+                    listSuggest.clear();
+                }
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                if (input.getText().length() > 0) {
+                    listSuggest.clear();
+                    suggest = mainDictionary.searchBySlang(input.getText());
+                    for (Map.Entry<String, Set<String>> entry : suggest.getDictionary().entrySet()) {
+                        listSuggest.addElement(entry.getKey());
+                    }
+                    suggestList.setModel(listSuggest);
+                } else {
+                    listSuggest.clear();
+                }
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                if (input.getText().length() > 0) {
+                    listSuggest.clear();
+                    suggest = mainDictionary.searchBySlang(input.getText());
+                    for (Map.Entry<String, Set<String>> entry : suggest.getDictionary().entrySet()) {
+                        listSuggest.addElement(entry.getKey());
+                    }
+                    suggestList.setModel(listSuggest);
+                } else {
+                    listSuggest.clear();
+                }
+            }
+        });
+
+        body2_1.add(scrollPane, BorderLayout.SOUTH);
         body2.add(body2_1, BorderLayout.WEST);
+
         // --------body2-2
         JPanel body2_2 = new JPanel();
         body2_2.setLayout(new BorderLayout());
         JLabel resultLabel = new JLabel("Result", JLabel.CENTER);
         resultLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        resultLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 6, 0));
+        resultLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
         body2_2.add(resultLabel, BorderLayout.NORTH);
-        JTextPane resultTextPane = new JTextPane();
-        resultTextPane.setPreferredSize(new Dimension(350, 300));
-        resultTextPane.setBorder(BorderFactory.createLineBorder(Color.black, 1));
+        //
+        JTextArea resultTextPane = new JTextArea();
+        resultTextPane.setPreferredSize(new Dimension(350, 306));
+        resultTextPane.setEditable(false);
+        resultTextPane.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
         body2_2.add(resultTextPane, BorderLayout.SOUTH);
         body2.add(body2_2, BorderLayout.EAST);
+        // listen cho result
+        suggestList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+                    int selectIndex = suggestList.getSelectedIndex();
+                    if (selectIndex != -1) {
+                        String key = listSuggest.getElementAt(selectIndex);
+
+                        // đang làm tới đây
+                        Set<String> define = new HashSet<>(mainDictionary.getDictionary().get(key));
+                        List<String> temp = new ArrayList<>(define);
+                        for (String ele : temp) {
+                            key = key + '\n' + ele + '\n';
+                        }
+                        resultTextPane.setText(key);
+                    }
+                }
+            }
+        });
         // ----------------
         bodyPanel.add(body1, BorderLayout.NORTH);
         bodyPanel.add(body2, BorderLayout.SOUTH);
@@ -192,6 +266,9 @@ public class SlangDictionary {
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                listSuggest.clear();
+                input.setText("");
+                resultTextPane.setText("");
                 cardLayout.show(mainPanel, "menu");
             }
         });
@@ -268,6 +345,7 @@ public class SlangDictionary {
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
                 cardLayout.show(mainPanel, "menu");
             }
         });

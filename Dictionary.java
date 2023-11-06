@@ -25,9 +25,11 @@ public class Dictionary {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] data = line.split("\\`");
-                String[] def = data[1].split("\\| ");
-                for (String s : def) {
-                    addSlangWordByDefine(data[0], s.trim());
+                if (data.length == 2) {
+                    String[] def = data[1].split("\\|");
+                    for (String s : def) {
+                        addSlangWordByDefine(data[0], s.trim());
+                    }
                 }
             }
             System.out.print("read completed!");
@@ -104,7 +106,7 @@ public class Dictionary {
         Dictionary slang = new Dictionary();
         slang.readFileWord("slang.txt");
         Dictionary check = new Dictionary();
-        check = slang.searchBySlang("2m");
+        check = slang.searchBySlang("a");
         check.print();
     }
 }
