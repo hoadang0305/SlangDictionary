@@ -2,13 +2,18 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class SlangDictionary {
     private JFrame frame;
     private JPanel mainPanel;
     private CardLayout cardLayout;
+    private Dictionary mainDictionary;
 
     public SlangDictionary() {
+        mainDictionary = new Dictionary();
+        mainDictionary.readFileWord("slang.txt");
         frame = new JFrame("Slang Dictionary");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(600, 500);
@@ -134,6 +139,7 @@ public class SlangDictionary {
         titleLabel.setBorder(BorderFactory.createEmptyBorder(15, 0, 10, 0));
         topPanel.add(titleLabel);
         // bodyPanel
+        Dictionary suggest;
         // ---body1
         JPanel body1 = new JPanel();
         JTextField input = new JTextField();
@@ -141,7 +147,15 @@ public class SlangDictionary {
         JButton search = new JButton("Search");
         body1.add(input, BorderLayout.WEST);
         body1.add(search, BorderLayout.EAST);
-
+        //
+        input.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                if (input.getText().length() > 0) {
+                    // suggest = mainDictionary.searchBySlang(input.getText());
+                }
+            }
+        });
         // ---body2
         JPanel body2 = new JPanel();
         body2.setLayout(new BorderLayout());
