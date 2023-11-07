@@ -102,11 +102,32 @@ public class Dictionary {
         return result;
     }
 
+    public Dictionary serchByDefine(String define) {
+        Dictionary result = new Dictionary();
+        // xử lí các trg hợp input
+        String lowWord = define.toLowerCase();
+        String upWord = define.toUpperCase();
+        String capitalizedWord = lowWord.substring(0, 1).toUpperCase() + lowWord.substring(1);
+        for (Map.Entry<String, Set<String>> entry : dictionary.entrySet()) {
+            Set<String> defs = entry.getValue();
+            for (String def : defs) {
+                if (def.contains(lowWord) || def.contains(upWord) || def.contains(capitalizedWord)
+                        || def.contains(define)) {
+                    result.addSlangWord(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+        return result;
+    }
+
+    public void clearDictionary() {
+        this.dictionary.clear();
+    }
+
     public static void main(String[] args) {
         Dictionary slang = new Dictionary();
         slang.readFileWord("slang.txt");
-        Dictionary check = new Dictionary();
-        check = slang.searchBySlang("a");
+        Dictionary check = slang.serchByDefine("it");
         check.print();
     }
 }
