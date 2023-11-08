@@ -11,8 +11,10 @@ Slag`Meaning
 1AAT`One At A Time
 3Q`Thank You
 :Q`Smoking
+<><`Fish
 >,<`Angry| annoyed
 >.<`Frustrated| upset| angry| in pain
+><`Frustration
 A&F`Always And Forever| Abercrombie & Fitch
 AA`African-American| Automobile Association| Alcoholics Anonymous
 AARP`American Association of Retired Persons
@@ -20,6 +22,11 @@ AAYF`As Always, Your Friend
 ABG`Asian Baby Girl
 ABT`About
 ACU`Army Combat Uniform
+ADAD`Another Day Another Dollar
 ADMIN`Administrator on forum, network etc
 AEAP`As Early As Possible
+B-DAY`Birthday
+BDAY`Birthday
+BREDA`man| Boy| dude
 ^.^`Happy
+test`ahihi
