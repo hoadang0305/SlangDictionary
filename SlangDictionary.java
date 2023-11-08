@@ -11,6 +11,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -28,7 +29,7 @@ public class SlangDictionary {
     public SlangDictionary() {
         mainDictionary = new Dictionary();
         history.readFileWord("history.txt");
-        mainDictionary.readFileWord("slang.txt");
+        mainDictionary.readFileWord("slangWordBackup.txt");
         frame = new JFrame("Slang Dictionary");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(600, 500);
@@ -42,19 +43,28 @@ public class SlangDictionary {
         mainPanel.add(menuPage, "menu");
 
         // Trang Chức năng 1
-        JPanel page1 = createSlangSearchPage();
-        mainPanel.add(page1, "page1");
+        JPanel slangPage = createSlangSearchPage();
+        mainPanel.add(slangPage, "page1");
 
         // Trang Chức năng 2
-        JPanel page2 = createDefineSearchPage();
-        mainPanel.add(page2, "page2");
+        JPanel definePage = createDefineSearchPage();
+        mainPanel.add(definePage, "page2");
 
         // Thêm 4 trang chức năng khác ở đây
-        JPanel page3 = createHistoryPage();
-        mainPanel.add(page3, "page3");
+        JPanel historyPage = createHistoryPage();
+        mainPanel.add(historyPage, "page3");
 
-        JPanel page4 = createAdminPage();
-        mainPanel.add(page4, "page4");
+        JPanel adminPage = createAdminPage();
+        mainPanel.add(adminPage, "page4");
+
+        JPanel addWordPage = addNewWordPage();
+        mainPanel.add(addWordPage, "page4_1");
+
+        JPanel editWordPage = editWordPage();
+        mainPanel.add(editWordPage, "page4_2");
+
+        JPanel deleteWordPage = deleteWordPage();
+        mainPanel.add(deleteWordPage, "page4_3");
 
         JPanel page5 = createFunctionPage("Chức năng 5");
         mainPanel.add(page5, "page5");
@@ -70,8 +80,9 @@ public class SlangDictionary {
     private JPanel createMenuPage() {
         JPanel menuPanel = new JPanel(new BorderLayout());
         JLabel titleLabel = new JLabel("Slang Dictionary", JLabel.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 30));
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 45));
+        titleLabel.setForeground(Color.CYAN);
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(30, 0, 10, 0));
         menuPanel.add(titleLabel, BorderLayout.NORTH);
         //
         JPanel searchPanel = new JPanel(new GridLayout(1, 2, 8, 8));
@@ -135,7 +146,7 @@ public class SlangDictionary {
         buttonPanel.add(adminButton);
         buttonPanel.add(resetButton);
         buttonPanel.add(miniGameButton);
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(50, 70, 50, 70));
         menuPanel.add(buttonPanel, BorderLayout.CENTER);
 
         return menuPanel;
@@ -260,7 +271,6 @@ public class SlangDictionary {
                         Set<String> define = new HashSet<>(mainDictionary.getDictionary().get(key));
                         // lưu vào lịch sử
                         history.addSlangWord(key, define);
-                        history.print();
                         List<String> temp = new ArrayList<>(define);
                         // Tạm thời để vầy
                         StyledDocument doc = resultTextPane.getStyledDocument();
@@ -550,26 +560,247 @@ public class SlangDictionary {
         // topPanel
         JLabel titleLabel = new JLabel("Admin Mode", JLabel.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(15, 0, 10, 0));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(15, 20, 10, 20));
         topPanel.add(titleLabel);
         // bodyPanel
-
+        JButton addWordButton = new JButton("Add New Word");
+        addWordButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(mainPanel, "page4_1");
+            }
+        });
+        JButton editWordButton = new JButton("Edit A Word");
+        editWordButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(mainPanel, "page4_2");
+            }
+        });
+        JButton deleteWordButton = new JButton("Delete A Word");
+        deleteWordButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(mainPanel, "page4_3");
+            }
+        });
+        JPanel adminPanel = new JPanel(new GridLayout(3, 1, 8, 8));
+        adminPanel.add(addWordButton);
+        adminPanel.add(editWordButton);
+        adminPanel.add(deleteWordButton);
+        adminPanel.setBorder(BorderFactory.createEmptyBorder(100, 200, 100, 200));
+        bodyPanel.add(adminPanel, BorderLayout.CENTER);
         // bottomPanel
         JButton backButton = new JButton("Back to Menu");
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                history.writeFileWord("history.txt");
                 cardLayout.show(mainPanel, "menu");
             }
         });
         bottomPanel.add(backButton);
         //
         main.add(topPanel, BorderLayout.PAGE_START);
-        // main.add(ezBody, BorderLayout.CENTER);
+        main.add(bodyPanel, BorderLayout.CENTER);
         main.add(bottomPanel, BorderLayout.PAGE_END);
 
         // --------------------------
+        return main;
+    }
+
+    private JPanel addNewWordPage() {
+        JPanel main = new JPanel();
+        JPanel topPanel = new JPanel();
+        JPanel bodyPanel = new JPanel();
+        JPanel bottomPanel = new JPanel();
+        //
+        main.setLayout(new BorderLayout());
+        topPanel.setLayout(new FlowLayout());
+        bodyPanel.setLayout(new BorderLayout());
+        bottomPanel.setLayout(new FlowLayout());
+        // topPanel
+        JLabel titleLabel = new JLabel("Add New Slang Word", JLabel.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        topPanel.add(titleLabel);
+        // bodyPanel
+        JPanel body1 = new JPanel();
+        body1.setLayout(new BorderLayout());
+        JPanel body2 = new JPanel();
+        body2.setLayout(new BorderLayout());
+        // body1
+        JLabel titleKey = new JLabel("Enter Key Word: ", JLabel.CENTER);
+        titleKey.setFont(new Font("Arial", Font.BOLD, 12));
+        titleKey.setBorder(BorderFactory.createEmptyBorder(20, 10, 8, 0));
+        JTextField inputKey = new JTextField();
+        inputKey.setPreferredSize(new Dimension(330, 8));
+        // inputKey.setBorder(BorderFactory.createEmptyBorder(16, 0, 20, 0));
+        body1.add(titleKey, BorderLayout.WEST);
+        body1.add(inputKey, BorderLayout.EAST);
+        bodyPanel.add(body1, BorderLayout.NORTH);
+        // body2
+        JPanel body2_1 = new JPanel();
+        body2_1.setLayout(new BorderLayout());
+        JPanel body2_2 = new JPanel();
+        body2_2.setLayout(new BorderLayout());
+        JLabel titleDef = new JLabel("Enter Definition: ", JLabel.CENTER);
+        titleDef.setFont(new Font("Arial", Font.BOLD, 12));
+        titleDef.setBorder(BorderFactory.createEmptyBorder(0, 10, 160, 0));
+        JTextArea inputDef = new JTextArea();
+        inputDef.setPreferredSize(new Dimension(330, 64));
+        inputDef.setBorder(BorderFactory.createLineBorder(Color.gray));
+        body2_1.add(titleDef, BorderLayout.CENTER);
+        body2_2.add(inputDef, BorderLayout.NORTH);
+        JLabel titleExtra = new JLabel("Note: Insert ',' between two definition");
+        body2_2.add(titleExtra, BorderLayout.SOUTH);
+        titleExtra.setBorder(BorderFactory.createEmptyBorder(5, 30, 120, 0));
+        //
+        JButton submitButton = new JButton("Submit");
+        submitButton.setPreferredSize(new Dimension(80, 40));
+        body2.add(body2_1, BorderLayout.WEST);
+        body2.add(body2_2, BorderLayout.EAST);
+
+        bodyPanel.add(body2, BorderLayout.SOUTH);
+
+        // bottomPanel
+        JButton backButton = new JButton("Return");
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(mainPanel, "page4");
+            }
+        });
+        backButton.setPreferredSize(new Dimension(80, 40));
+        bottomPanel.add(submitButton);
+        bottomPanel.add(backButton);
+        //
+        JPanel ezBody = new JPanel();
+        ezBody.setLayout(new BoxLayout(ezBody, BoxLayout.LINE_AXIS));
+        ezBody.add(Box.createRigidArea(new Dimension(10, 0)));
+        ezBody.add(bodyPanel);
+        ezBody.add(Box.createRigidArea(new Dimension(110, 0)));
+        bottomPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
+        main.add(topPanel, BorderLayout.PAGE_START);
+        main.add(ezBody, BorderLayout.CENTER);
+        main.add(bottomPanel, BorderLayout.PAGE_END);
+        //
+
+        submitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String key = inputKey.getText();
+                String def = inputDef.getText();
+                String[] definition = def.split("\\,");
+                Set<String> list = new HashSet<>(Arrays.asList(definition));
+                if (mainDictionary.getDictionary().containsKey(key)) {
+                    String[] options = { "Duplicate", "Overwrite" };
+                    int choice = JOptionPane.showOptionDialog(
+                            null,
+                            "This word already exists!",
+                            "Warning",
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.QUESTION_MESSAGE,
+                            null,
+                            options,
+                            options[0]);
+                    if (choice == 0) {
+                        key = key + " ";
+                        mainDictionary.addSlangWord(key, list);
+                        JOptionPane.showMessageDialog(null, "Added new words successfully", "Notification",
+                                JOptionPane.INFORMATION_MESSAGE);
+                        inputKey.setText("");
+                        inputDef.setText("");
+                        mainDictionary.writeFileWord("slangWordBackUp.txt");
+                        cardLayout.show(mainPanel, "page4");
+                    } else if (choice == 1) {
+                        mainDictionary.addSlangWord(key, list);
+                        JOptionPane.showMessageDialog(null, "Added new words successfully", "Notification",
+                                JOptionPane.INFORMATION_MESSAGE);
+                        inputKey.setText("");
+                        inputDef.setText("");
+                        mainDictionary.writeFileWord("slangWordBackUp.txt");
+                        cardLayout.show(mainPanel, "page4");
+                    }
+
+                } else {
+                    mainDictionary.addSlangWord(key, list);
+                    JOptionPane.showMessageDialog(null, "Added new words successfully", "Notification",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    inputKey.setText("");
+                    inputDef.setText("");
+                    mainDictionary.writeFileWord("slangWordBackUp.txt");
+                    cardLayout.show(mainPanel, "page4");
+                }
+            }
+        });
+        return main;
+    }
+
+    private JPanel editWordPage() {
+        JPanel main = new JPanel();
+        JPanel topPanel = new JPanel();
+        JPanel bodyPanel = new JPanel();
+        JPanel bottomPanel = new JPanel();
+        //
+        main.setLayout(new BorderLayout());
+        topPanel.setLayout(new FlowLayout());
+        bodyPanel.setLayout(new BorderLayout());
+        bottomPanel.setLayout(new FlowLayout());
+        // topPanel
+        JLabel titleLabel = new JLabel("Edit Slang Word", JLabel.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(15, 20, 10, 20));
+        topPanel.add(titleLabel);
+        // bodyPanel
+
+        // bottomPanel
+        JButton backButton = new JButton("Return");
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(mainPanel, "page4");
+            }
+        });
+        bottomPanel.add(backButton);
+        //
+        main.add(topPanel, BorderLayout.PAGE_START);
+        main.add(bodyPanel, BorderLayout.CENTER);
+        main.add(bottomPanel, BorderLayout.PAGE_END);
+        //
+        return main;
+    }
+
+    private JPanel deleteWordPage() {
+        JPanel main = new JPanel();
+        JPanel topPanel = new JPanel();
+        JPanel bodyPanel = new JPanel();
+        JPanel bottomPanel = new JPanel();
+        //
+        main.setLayout(new BorderLayout());
+        topPanel.setLayout(new FlowLayout());
+        bodyPanel.setLayout(new BorderLayout());
+        bottomPanel.setLayout(new FlowLayout());
+        // topPanel
+        JLabel titleLabel = new JLabel("Delete Slang Word", JLabel.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(15, 20, 10, 20));
+        topPanel.add(titleLabel);
+        // bodyPanel
+
+        // bottomPanel
+        JButton backButton = new JButton("Return");
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(mainPanel, "page4");
+            }
+        });
+        bottomPanel.add(backButton);
+        //
+        main.add(topPanel, BorderLayout.PAGE_START);
+        main.add(bodyPanel, BorderLayout.CENTER);
+        main.add(bottomPanel, BorderLayout.PAGE_END);
+        //
         return main;
     }
 
