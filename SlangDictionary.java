@@ -33,7 +33,19 @@ public class SlangDictionary {
         frame = new JFrame("Slang Dictionary");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(600, 500);
-
+        try {
+            // Set System L&F
+            UIManager.setLookAndFeel(
+                    UIManager.getSystemLookAndFeelClassName());
+        } catch (UnsupportedLookAndFeelException e) {
+            // handle exception
+        } catch (ClassNotFoundException e) {
+            // handle exception
+        } catch (InstantiationException e) {
+            // handle exception
+        } catch (IllegalAccessException e) {
+            // handle exception
+        }
         mainPanel = new JPanel();
         cardLayout = new CardLayout();
         mainPanel.setLayout(cardLayout);
@@ -66,11 +78,20 @@ public class SlangDictionary {
         JPanel deleteWordPage = deleteWordPage();
         mainPanel.add(deleteWordPage, "page4_3");
 
-        JPanel page5 = createFunctionPage("Chức năng 5");
-        mainPanel.add(page5, "page5");
+        JPanel resetPage = recoveryDictionary();
+        mainPanel.add(resetPage, "page5");
 
-        JPanel page6 = createFunctionPage("Chức năng 6");
-        mainPanel.add(page6, "page6");
+        JPanel gamePage = createMiniGamePage();
+        mainPanel.add(gamePage, "page6");
+
+        JPanel randomWordGame = randomWordToDay();
+        mainPanel.add(randomWordGame, "page6_1");
+
+        JPanel quizWord = createFunctionPage("Chức năng 6.2");
+        mainPanel.add(quizWord, "page6_2");
+
+        JPanel quizDefine = createFunctionPage("Chức năng 6.3");
+        mainPanel.add(quizDefine, "page6_3");
 
         frame.add(mainPanel);
 
@@ -95,7 +116,7 @@ public class SlangDictionary {
             }
         });
         //
-        JButton searchByDefineButton = new JButton("Search by Define");
+        JButton searchByDefineButton = new JButton("Search by Definition");
         searchByDefineButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -194,6 +215,7 @@ public class SlangDictionary {
         suggestList.setFixedCellHeight(38);
         suggestList.setFixedCellWidth(190);
         JScrollPane scrollPane = new JScrollPane(suggestList);
+        //
         DefaultListModel<String> listSuggest = new DefaultListModel<>();
         // xử lí listen của suggest
         input.getDocument().addDocumentListener(new DocumentListener() {
@@ -271,6 +293,7 @@ public class SlangDictionary {
                         Set<String> define = new HashSet<>(mainDictionary.getDictionary().get(key));
                         // lưu vào lịch sử
                         history.addSlangWord(key, define);
+                        //
                         List<String> temp = new ArrayList<>(define);
                         // Tạm thời để vầy
                         StyledDocument doc = resultTextPane.getStyledDocument();
@@ -283,7 +306,7 @@ public class SlangDictionary {
                         try {
                             doc.insertString(doc.getLength(), key, setKey);
                             doc.insertString(doc.getLength(), "\n\n\n", null);
-                            doc.insertString(doc.getLength(), "Definition:\n", null);
+                            doc.insertString(doc.getLength(), "  Definition:\n", null);
                             for (String ele : temp) {
                                 doc.insertString(doc.getLength(), "- ", null);
                                 doc.insertString(doc.getLength(), ele, null);
@@ -336,7 +359,7 @@ public class SlangDictionary {
         bodyPanel.setLayout(new BorderLayout());
         bottomPanel.setLayout(new FlowLayout());
         // topPanel
-        JLabel titleLabel = new JLabel("Search by Define", JLabel.CENTER);
+        JLabel titleLabel = new JLabel("Search by Definition", JLabel.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
         titleLabel.setBorder(BorderFactory.createEmptyBorder(8, 0, 8, 0));
         topPanel.add(titleLabel);
@@ -344,7 +367,7 @@ public class SlangDictionary {
 
         // ---body1
         JPanel body1 = new JPanel();
-        JLabel titleInput = new JLabel("Enter Search Define", JLabel.CENTER);
+        JLabel titleInput = new JLabel("Enter Search Definition", JLabel.CENTER);
         titleInput.setFont(new Font("Arial", Font.BOLD, 12));
         JTextField input = new JTextField();
         input.setPreferredSize(new Dimension(300, 27));
@@ -366,6 +389,7 @@ public class SlangDictionary {
         body2_1.add(suggestLabel, BorderLayout.NORTH);
 
         // =======================
+        JTextPane resultTextPane = new JTextPane();
         JList<String> suggestList = new JList<>();
         suggestList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         suggestList.setFixedCellHeight(38);
@@ -386,6 +410,7 @@ public class SlangDictionary {
                     suggestList.setModel(listSuggest);
                 } else {
                     listSuggest.clear();
+                    resultTextPane.setText("");
                 }
             }
 
@@ -400,6 +425,7 @@ public class SlangDictionary {
                     suggestList.setModel(listSuggest);
                 } else {
                     listSuggest.clear();
+                    resultTextPane.setText("");
                 }
             }
 
@@ -414,6 +440,7 @@ public class SlangDictionary {
                     suggestList.setModel(listSuggest);
                 } else {
                     listSuggest.clear();
+                    resultTextPane.setText("");
                 }
             }
         });
@@ -430,7 +457,7 @@ public class SlangDictionary {
         resultLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 6, 0));
         body2_2.add(resultLabel, BorderLayout.NORTH);
         //
-        JTextPane resultTextPane = new JTextPane();
+
         resultTextPane.setPreferredSize(new Dimension(350, 306));
         resultTextPane.setEditable(false);
         // resultTextPane.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
@@ -500,6 +527,7 @@ public class SlangDictionary {
         return main;
     }
 
+    // thêm button reset
     private JPanel createHistoryPage() {
         JPanel main = new JPanel();
         JPanel topPanel = new JPanel();
@@ -649,6 +677,7 @@ public class SlangDictionary {
         JTextArea inputDef = new JTextArea();
         inputDef.setPreferredSize(new Dimension(330, 64));
         inputDef.setBorder(BorderFactory.createLineBorder(Color.gray));
+        inputDef.setLineWrap(true);
         body2_1.add(titleDef, BorderLayout.CENTER);
         body2_2.add(inputDef, BorderLayout.NORTH);
         JLabel titleExtra = new JLabel("Note: Insert ',' between two definition");
@@ -752,20 +781,207 @@ public class SlangDictionary {
         titleLabel.setBorder(BorderFactory.createEmptyBorder(15, 20, 10, 20));
         topPanel.add(titleLabel);
         // bodyPanel
+        // ---body1
+        JPanel body1 = new JPanel();
+        JLabel titleInput = new JLabel("Enter Edit Word", JLabel.CENTER);
+        titleInput.setFont(new Font("Arial", Font.BOLD, 12));
 
+        JTextField input = new JTextField();
+        input.setPreferredSize(new Dimension(300, 27));
+        body1.add(titleInput, BorderLayout.WEST);
+        body1.add(input, BorderLayout.EAST);
+        // ---body2
+        JPanel body2 = new JPanel();
+        body2.setLayout(new BorderLayout());
+        // ---------body2-1
+        JPanel body2_1 = new JPanel();
+        body2_1.setLayout(new BorderLayout());
+        JLabel suggestLabel = new JLabel("Click to Edit", JLabel.CENTER);
+        suggestLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        suggestLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
+        body2_1.add(suggestLabel, BorderLayout.NORTH);
+
+        JList<String> suggestList = new JList<>();
+        suggestList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        suggestList.setFixedCellHeight(38);
+        suggestList.setFixedCellWidth(190);
+        JScrollPane scrollPane = new JScrollPane(suggestList);
+        DefaultListModel<String> listSuggest = new DefaultListModel<>();
+        // xử lí listen của suggest
+        input.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                if (input.getText().length() > 0) {
+
+                    listSuggest.clear();
+                    suggest = mainDictionary.searchBySlang(input.getText());
+                    for (Map.Entry<String, Set<String>> entry : suggest.getDictionary().entrySet()) {
+                        listSuggest.addElement(entry.getKey());
+                    }
+                    suggestList.setModel(listSuggest);
+                } else {
+                    listSuggest.clear();
+                }
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                if (input.getText().length() > 0) {
+                    listSuggest.clear();
+                    suggest = mainDictionary.searchBySlang(input.getText());
+                    for (Map.Entry<String, Set<String>> entry : suggest.getDictionary().entrySet()) {
+                        listSuggest.addElement(entry.getKey());
+                    }
+                    suggestList.setModel(listSuggest);
+                } else {
+                    listSuggest.clear();
+                }
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                if (input.getText().length() > 0) {
+                    listSuggest.clear();
+                    suggest = mainDictionary.searchBySlang(input.getText());
+                    for (Map.Entry<String, Set<String>> entry : suggest.getDictionary().entrySet()) {
+                        listSuggest.addElement(entry.getKey());
+                    }
+                    suggestList.setModel(listSuggest);
+                } else {
+                    listSuggest.clear();
+                }
+            }
+        });
+
+        body2_1.add(scrollPane, BorderLayout.SOUTH);
+        body2_1.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
+        body2.add(body2_1, BorderLayout.WEST);
+        bodyPanel.add(body1, BorderLayout.NORTH);
+
+        // --------body2-2
+        JPanel body2_2 = new JPanel();
+        body2_2.setLayout(new BorderLayout());
+        JLabel editLabel = new JLabel("Word Information", JLabel.CENTER);
+        editLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        editLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
+        body2_2.add(editLabel, BorderLayout.NORTH);
+        //
+        JPanel body2_2_1 = new JPanel();
+        body2_2_1.setLayout(new BorderLayout());
+        //
+        JTextPane resultTextPane = new JTextPane();
+        resultTextPane.setPreferredSize(new Dimension(70, 120));
+        resultTextPane.setEditable(false);
+        JPanel body2_2_1_a = new JPanel();
+        body2_2_1_a.setLayout(new BorderLayout());
+        body2_2_1_a.add(resultTextPane, BorderLayout.CENTER);
+        body2_2_1_a.setBorder(BorderFactory.createEmptyBorder(10, 30, 0, 30));
+        //
+        JLabel keyLabel = new JLabel("Change Definition: ", JLabel.LEFT);
+        keyLabel.setFont(new Font("Arial", Font.BOLD, 12));
+        keyLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 5, 5));
+        JTextArea inputDef = new JTextArea();
+        inputDef.setPreferredSize(new Dimension(20, 3));
+        inputDef.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        inputDef.setLineWrap(true);// để xuống dòng
+        JPanel body2_2_1_b = new JPanel();
+        body2_2_1_b.setBorder(BorderFactory.createEmptyBorder(30, 10, 80, 40));
+        body2_2_1_b.setLayout(new BorderLayout());
+        body2_2_1_b.add(keyLabel, BorderLayout.WEST);
+        body2_2_1_b.add(inputDef, BorderLayout.CENTER);
+        //
+        body2_2_1.add(body2_2_1_a, BorderLayout.NORTH);
+        body2_2_1.add(body2_2_1_b, BorderLayout.CENTER);
+        //
+        body2_2.add(body2_2_1, BorderLayout.CENTER);
+        //
+        body2.add(body2_2, BorderLayout.CENTER);
+        bodyPanel.add(body2, BorderLayout.SOUTH);
         // bottomPanel
+        JButton submitButton = new JButton("Submit");
+        submitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (resultTextPane.getText().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Can't edit the empty word!!!", "Warning",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    input.setText("");
+                    listSuggest.clear();
+                    resultTextPane.setText("");
+                } else {
+                    String newDef = inputDef.getText();
+                    String[] newDefStrings = newDef.split("\\,");
+                    Set<String> list = new HashSet<>(Arrays.asList(newDefStrings));
+                    int selectIndex = suggestList.getSelectedIndex();
+                    String key = listSuggest.getElementAt(selectIndex);
+                    mainDictionary.getDictionary().put(key, list);
+                    mainDictionary.writeFileWord("slangWordBackUp.txt");
+                    JOptionPane.showMessageDialog(null, "Update complete!", "Notification",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    input.setText("");
+                    listSuggest.clear();
+                    resultTextPane.setText("");
+                    inputDef.setText("");
+                }
+            }
+        });
         JButton backButton = new JButton("Return");
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                input.setText("");
+                listSuggest.clear();
+                resultTextPane.setText("");
                 cardLayout.show(mainPanel, "page4");
             }
         });
+        bottomPanel.add(submitButton);
         bottomPanel.add(backButton);
         //
+        JPanel ezBody = new JPanel();
+        ezBody.setLayout(new BoxLayout(ezBody, BoxLayout.LINE_AXIS));
+        ezBody.add(Box.createRigidArea(new Dimension(10, 0)));
+        ezBody.add(bodyPanel);
+        ezBody.add(Box.createRigidArea(new Dimension(10, 0)));
         main.add(topPanel, BorderLayout.PAGE_START);
-        main.add(bodyPanel, BorderLayout.CENTER);
+        main.add(ezBody, BorderLayout.CENTER);
         main.add(bottomPanel, BorderLayout.PAGE_END);
+        //
+        suggestList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+                    resultTextPane.setText("");
+                    int selectIndex = suggestList.getSelectedIndex();
+                    if (selectIndex != -1) {
+                        String key = listSuggest.getElementAt(selectIndex);
+                        Set<String> define = new HashSet<>(mainDictionary.getDictionary().get(key));
+                        //
+                        List<String> temp = new ArrayList<>(define);
+                        // Tạm thời để vầy
+                        StyledDocument doc = resultTextPane.getStyledDocument();
+                        SimpleAttributeSet setKey = new SimpleAttributeSet();
+                        StyleConstants.setForeground(setKey, Color.RED);
+                        StyleConstants.setFontSize(setKey, 40);
+                        StyleConstants.setFontFamily(setKey, "Arial");
+                        StyleConstants.setBold(setKey, true);
+                        StyleConstants.setItalic(setKey, true);
+                        try {
+                            doc.insertString(doc.getLength(), key, setKey);
+                            doc.insertString(doc.getLength(), "\n\n\n", null);
+                            doc.insertString(doc.getLength(), "  Definition:\n", null);
+                            for (String ele : temp) {
+                                doc.insertString(doc.getLength(), "- ", null);
+                                doc.insertString(doc.getLength(), ele, null);
+                                doc.insertString(doc.getLength(), "\n", null);
+                            }
+                        } catch (Exception err) {
+                            err.printStackTrace();
+                        }
+                    }
+                }
+            }
+        });
         //
         return main;
     }
@@ -786,13 +1002,303 @@ public class SlangDictionary {
         titleLabel.setBorder(BorderFactory.createEmptyBorder(15, 20, 10, 20));
         topPanel.add(titleLabel);
         // bodyPanel
+        // ---body1
+        JPanel body1 = new JPanel();
+        JLabel titleInput = new JLabel("Enter Slang Word", JLabel.CENTER);
+        titleInput.setFont(new Font("Arial", Font.BOLD, 12));
 
+        JTextField input = new JTextField();
+        input.setPreferredSize(new Dimension(300, 27));
+        body1.add(titleInput, BorderLayout.WEST);
+        body1.add(input, BorderLayout.EAST);
+        // ---body2
+        JPanel body2 = new JPanel();
+        body2.setLayout(new BorderLayout());
+        // ---------body2-1
+        JPanel body2_1 = new JPanel();
+        body2_1.setLayout(new BorderLayout());
+        JLabel suggestLabel = new JLabel("Choose Word to Delete", JLabel.CENTER);
+        suggestLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        suggestLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
+        body2_1.add(suggestLabel, BorderLayout.NORTH);
+
+        JList<String> suggestList = new JList<>();
+        suggestList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        suggestList.setFixedCellHeight(38);
+        suggestList.setFixedCellWidth(190);
+        JScrollPane scrollPane = new JScrollPane(suggestList);
+        DefaultListModel<String> listSuggest = new DefaultListModel<>();
+        // xử lí listen của suggest
+        input.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                if (input.getText().length() > 0) {
+
+                    listSuggest.clear();
+                    suggest = mainDictionary.searchBySlang(input.getText());
+                    for (Map.Entry<String, Set<String>> entry : suggest.getDictionary().entrySet()) {
+                        listSuggest.addElement(entry.getKey());
+                    }
+                    suggestList.setModel(listSuggest);
+                } else {
+                    listSuggest.clear();
+                }
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                if (input.getText().length() > 0) {
+                    listSuggest.clear();
+                    suggest = mainDictionary.searchBySlang(input.getText());
+                    for (Map.Entry<String, Set<String>> entry : suggest.getDictionary().entrySet()) {
+                        listSuggest.addElement(entry.getKey());
+                    }
+                    suggestList.setModel(listSuggest);
+                } else {
+                    listSuggest.clear();
+                }
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                if (input.getText().length() > 0) {
+                    listSuggest.clear();
+                    suggest = mainDictionary.searchBySlang(input.getText());
+                    for (Map.Entry<String, Set<String>> entry : suggest.getDictionary().entrySet()) {
+                        listSuggest.addElement(entry.getKey());
+                    }
+                    suggestList.setModel(listSuggest);
+                } else {
+                    listSuggest.clear();
+                }
+            }
+        });
+
+        body2_1.add(scrollPane, BorderLayout.SOUTH);
+        body2_1.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
+        body2.add(body2_1, BorderLayout.WEST);
+        bodyPanel.add(body1, BorderLayout.NORTH);
+
+        // --------body2-2
+        JPanel body2_2 = new JPanel();
+        body2_2.setLayout(new BorderLayout());
+        JLabel editLabel = new JLabel("Word Information", JLabel.CENTER);
+        editLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        editLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
+        body2_2.add(editLabel, BorderLayout.NORTH);
+        //
+        JPanel body2_2_1 = new JPanel();
+        body2_2_1.setLayout(new BorderLayout());
+        //
+        JTextPane resultTextPane = new JTextPane();
+        resultTextPane.setPreferredSize(new Dimension(70, 120));
+        resultTextPane.setEditable(false);
+        JPanel body2_2_1_a = new JPanel();
+        body2_2_1_a.setLayout(new BorderLayout());
+        body2_2_1_a.add(resultTextPane, BorderLayout.CENTER);
+        body2_2_1_a.setBorder(BorderFactory.createEmptyBorder(10, 30, 0, 30));
+        //
+        body2_2_1.add(body2_2_1_a, BorderLayout.CENTER);
+
+        //
+        body2_2.add(body2_2_1, BorderLayout.CENTER);
+        //
+        body2.add(body2_2, BorderLayout.CENTER);
+        bodyPanel.add(body2, BorderLayout.SOUTH);
         // bottomPanel
+        JButton submitButton = new JButton("Delete");
+        submitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (resultTextPane.getText().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Can't delete the empty word!!!", "Warning",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    input.setText("");
+                    listSuggest.clear();
+                    resultTextPane.setText("");
+                } else {
+                    int choice = JOptionPane.showConfirmDialog(
+                            null,
+                            "Do you want to delete this slang word?",
+                            "verification",
+                            JOptionPane.YES_NO_OPTION);
+                    if (choice == JOptionPane.YES_OPTION) {
+                        int selectIndex = suggestList.getSelectedIndex();
+                        String key = listSuggest.getElementAt(selectIndex);
+                        mainDictionary.getDictionary().remove(key);
+                        mainDictionary.writeFileWord("slangWordBackUp.txt");
+                        JOptionPane.showMessageDialog(null, "Delete complete!", "Notification",
+                                JOptionPane.INFORMATION_MESSAGE);
+                        input.setText("");
+                        listSuggest.clear();
+                        resultTextPane.setText("");
+                    }
+                }
+            }
+        });
         JButton backButton = new JButton("Return");
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                input.setText("");
+                listSuggest.clear();
+                resultTextPane.setText("");
                 cardLayout.show(mainPanel, "page4");
+            }
+        });
+        bottomPanel.add(submitButton);
+        bottomPanel.add(backButton);
+        //
+        JPanel ezBody = new JPanel();
+        ezBody.setLayout(new BoxLayout(ezBody, BoxLayout.LINE_AXIS));
+        ezBody.add(Box.createRigidArea(new Dimension(10, 0)));
+        ezBody.add(bodyPanel);
+        ezBody.add(Box.createRigidArea(new Dimension(10, 0)));
+        main.add(topPanel, BorderLayout.PAGE_START);
+        main.add(ezBody, BorderLayout.CENTER);
+        main.add(bottomPanel, BorderLayout.PAGE_END);
+        //
+        suggestList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+                    resultTextPane.setText("");
+                    int selectIndex = suggestList.getSelectedIndex();
+                    if (selectIndex != -1) {
+                        String key = listSuggest.getElementAt(selectIndex);
+                        Set<String> define = new HashSet<>(mainDictionary.getDictionary().get(key));
+                        //
+                        List<String> temp = new ArrayList<>(define);
+                        // Tạm thời để vầy
+                        StyledDocument doc = resultTextPane.getStyledDocument();
+                        SimpleAttributeSet setKey = new SimpleAttributeSet();
+                        StyleConstants.setForeground(setKey, Color.RED);
+                        StyleConstants.setFontSize(setKey, 40);
+                        StyleConstants.setFontFamily(setKey, "Arial");
+                        StyleConstants.setBold(setKey, true);
+                        StyleConstants.setItalic(setKey, true);
+                        try {
+                            doc.insertString(doc.getLength(), key, setKey);
+                            doc.insertString(doc.getLength(), "\n\n\n", null);
+                            doc.insertString(doc.getLength(), "  Definition:\n", null);
+                            for (String ele : temp) {
+                                doc.insertString(doc.getLength(), "- ", null);
+                                doc.insertString(doc.getLength(), ele, null);
+                                doc.insertString(doc.getLength(), "\n", null);
+                            }
+                        } catch (Exception err) {
+                            err.printStackTrace();
+                        }
+                    }
+                }
+            }
+        });
+        //
+        return main;
+    }
+
+    private JPanel recoveryDictionary() {
+        JPanel main = new JPanel(new BorderLayout());
+        JPanel topPanel = new JPanel(new FlowLayout());
+        JPanel bodyPanel = new JPanel(new BorderLayout());
+        JPanel bottomPanel = new JPanel(new FlowLayout());
+        //
+        // topPanel
+        JLabel titleLabel = new JLabel("Reset Slang Dictionary", JLabel.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(15, 20, 10, 20));
+        topPanel.add(titleLabel);
+        // body Panel
+        JButton resetButton = new JButton("Reset Dictionary");
+        bodyPanel.add(resetButton, BorderLayout.CENTER);
+        bodyPanel.setBorder(BorderFactory.createEmptyBorder(150, 150, 150, 150));
+        // bottom Panel
+        resetButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int choice = JOptionPane.showConfirmDialog(
+                        null,
+                        "Do you want to reset dictionary?",
+                        "verification",
+                        JOptionPane.YES_NO_OPTION);
+                if (choice == JOptionPane.YES_OPTION) {
+                    mainDictionary.readFileWord("slang.txt");
+                    mainDictionary.writeFileWord("slangWordBackUp.txt");
+                    JOptionPane.showMessageDialog(null, "Reset complete!", "Notification",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    cardLayout.show(mainPanel, "menu");
+                }
+            }
+        });
+        JButton backButton = new JButton("Back to Menu");
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(mainPanel, "menu");
+            }
+        });
+        bottomPanel.add(backButton);
+
+        JPanel ezBody = new JPanel();
+        ezBody.setLayout(new BoxLayout(ezBody, BoxLayout.LINE_AXIS));
+        ezBody.add(Box.createRigidArea(new Dimension(10, 0)));
+        ezBody.add(bodyPanel);
+        ezBody.add(Box.createRigidArea(new Dimension(10, 0)));
+        main.add(topPanel, BorderLayout.PAGE_START);
+        main.add(ezBody, BorderLayout.CENTER);
+        main.add(bottomPanel, BorderLayout.PAGE_END);
+        return main;
+    }
+
+    private JPanel createMiniGamePage() {
+        JPanel main = new JPanel();
+        JPanel topPanel = new JPanel();
+        JPanel bodyPanel = new JPanel();
+        JPanel bottomPanel = new JPanel();
+        //
+        main.setLayout(new BorderLayout());
+        topPanel.setLayout(new FlowLayout());
+        bodyPanel.setLayout(new BorderLayout());
+        bottomPanel.setLayout(new FlowLayout());
+        // topPanel
+        JLabel titleLabel = new JLabel("Mini Game", JLabel.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(15, 20, 10, 20));
+        topPanel.add(titleLabel);
+        // bodyPanel
+        JButton addWordButton = new JButton("On This Day Slang Word");
+        addWordButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(mainPanel, "page6_1");
+            }
+        });
+        JButton editWordButton = new JButton("Slang Word Quiz( Word Mode)");
+        editWordButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(mainPanel, "page6_2");
+            }
+        });
+        JButton deleteWordButton = new JButton("Slang Word Quiz( Definition Mode)");
+        deleteWordButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(mainPanel, "page6_3");
+            }
+        });
+        JPanel adminPanel = new JPanel(new GridLayout(3, 1, 8, 8));
+        adminPanel.add(addWordButton);
+        adminPanel.add(editWordButton);
+        adminPanel.add(deleteWordButton);
+        adminPanel.setBorder(BorderFactory.createEmptyBorder(100, 180, 100, 180));
+        bodyPanel.add(adminPanel, BorderLayout.CENTER);
+        // bottomPanel
+        JButton backButton = new JButton("Back to Menu");
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(mainPanel, "menu");
             }
         });
         bottomPanel.add(backButton);
@@ -800,7 +1306,22 @@ public class SlangDictionary {
         main.add(topPanel, BorderLayout.PAGE_START);
         main.add(bodyPanel, BorderLayout.CENTER);
         main.add(bottomPanel, BorderLayout.PAGE_END);
+
+        // --------------------------
+        return main;
+    }
+
+    private JPanel randomWordToDay() {
+        JPanel main = new JPanel(new BorderLayout());
+        JPanel topPanel = new JPanel(new FlowLayout());
+        JPanel bodyPanel = new JPanel(new BorderLayout());
+        JPanel bottomPanel = new JPanel(new FlowLayout());
         //
+        // topPanel
+        JLabel titleLabel = new JLabel("Random Word For Day", JLabel.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(15, 20, 10, 20));
+        topPanel.add(titleLabel);
         return main;
     }
 

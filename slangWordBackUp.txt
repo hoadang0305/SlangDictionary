@@ -7633,7 +7633,6 @@ ZZZ`Sleepy| tired| bored
 ^_^`Happiness| satisfied
 ^_~`Wink
 ^~^`Mischievous Smile
-test`ahihi
 |O|`LOL
 }:-)`Devilish smile
 ~`Put At The End Of A Word To Make It Longer| Denotes Sarcasm
