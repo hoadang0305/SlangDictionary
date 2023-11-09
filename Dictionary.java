@@ -1,10 +1,12 @@
 import java.util.List;
+import java.awt.RadialGradientPaint;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -122,6 +124,43 @@ public class Dictionary {
 
     public void clearDictionary() {
         this.dictionary.clear();
+    }
+
+    public TreeMap<String, Set<String>> randomWord() {
+        TreeMap<String, Set<String>> word = new TreeMap<>();
+        Random random = new Random();
+        List<String> keyList = new ArrayList<>(dictionary.keySet());
+        String key = keyList.get(random.nextInt(keyList.size()));
+        word.put(key, dictionary.get(key));
+        return word;
+    }
+
+    public TreeMap<String, List<String>> quizSlang() {
+        TreeMap<String, List<String>> result = new TreeMap<>();
+        List<String> key = new ArrayList<>(dictionary.keySet());
+        Random random = new Random();
+        List<String> chooseKey = new ArrayList<>();
+        List<String> defList = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            int randIndex = random.nextInt(key.size());
+            String selectKey = key.get(randIndex);
+            chooseKey.add(selectKey);
+            Set<String> def = new HashSet<>(dictionary.get(selectKey));
+            StringBuilder stringBuilder = new StringBuilder();
+            for (String item : def) {
+                stringBuilder.append(item).append(", ");
+            }
+            String temp = stringBuilder.toString();
+
+            if (temp.endsWith(", ")) {
+                temp = temp.substring(0, temp.length() - 2);
+            }
+            defList.add(temp);
+        }
+        int chooseIndex = random.nextInt(4);
+        result.put(chooseKey.get(chooseIndex), defList);
+        // trả về một key bất kì
+        return result;
     }
 
     public static void main(String[] args) {

@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.List;
 
 public class SlangDictionary {
@@ -25,6 +26,8 @@ public class SlangDictionary {
     Dictionary suggest = new Dictionary();
     Dictionary history = new Dictionary();
     DefaultListModel<String> listHistory = new DefaultListModel<>();
+    TreeMap<String, Set<String>> randomWord = new TreeMap<>();
+    TreeMap<String, List<String>> quizSlang = new TreeMap<>();
 
     public SlangDictionary() {
         mainDictionary = new Dictionary();
@@ -87,7 +90,7 @@ public class SlangDictionary {
         JPanel randomWordGame = randomWordToDay();
         mainPanel.add(randomWordGame, "page6_1");
 
-        JPanel quizWord = createFunctionPage("Chức năng 6.2");
+        JPanel quizWord = quizSlang();
         mainPanel.add(quizWord, "page6_2");
 
         JPanel quizDefine = createFunctionPage("Chức năng 6.3");
@@ -1322,6 +1325,149 @@ public class SlangDictionary {
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
         titleLabel.setBorder(BorderFactory.createEmptyBorder(15, 20, 10, 20));
         topPanel.add(titleLabel);
+        //
+        // bodyPanel
+        JTextPane resultTextPane = new JTextPane();
+        resultTextPane.setPreferredSize(new Dimension(70, 120));
+        resultTextPane.setEditable(false);
+        bodyPanel.add(resultTextPane, BorderLayout.CENTER);
+        bodyPanel.setBorder(BorderFactory.createEmptyBorder(25, 60, 40, 60));
+        JButton resetButton = new JButton("Reset");
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        buttonPanel.add(resetButton);
+        bodyPanel.add(buttonPanel, BorderLayout.SOUTH);
+        //
+
+        // bottomPanel
+        JButton backButton = new JButton("Return");
+        bottomPanel.add(backButton);
+        //
+        main.add(topPanel, BorderLayout.PAGE_START);
+        main.add(bodyPanel, BorderLayout.CENTER);
+        main.add(bottomPanel, BorderLayout.PAGE_END);
+
+        // --------------------------
+        if (randomWord.size() == 0) {
+            randomWord = mainDictionary.randomWord();
+        }
+        String key = randomWord.firstKey();
+        Set<String> temp = randomWord.get(key);
+        List<String> def = new ArrayList<>(temp);
+        StyledDocument doc = resultTextPane.getStyledDocument();
+        SimpleAttributeSet setKey = new SimpleAttributeSet();
+        StyleConstants.setForeground(setKey, Color.RED);
+        StyleConstants.setFontSize(setKey, 40);
+        StyleConstants.setFontFamily(setKey, "Arial");
+        StyleConstants.setBold(setKey, true);
+        StyleConstants.setItalic(setKey, true);
+        try {
+            doc.insertString(doc.getLength(), key, setKey);
+            doc.insertString(doc.getLength(), "\n\n\n", null);
+            doc.insertString(doc.getLength(), "  Definition:\n", null);
+            for (String ele : def) {
+                doc.insertString(doc.getLength(), "- ", null);
+                doc.insertString(doc.getLength(), ele, null);
+                doc.insertString(doc.getLength(), "\n", null);
+            }
+        } catch (Exception err) {
+            err.printStackTrace();
+        }
+        //
+        resetButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                resultTextPane.setText("");
+                randomWord = mainDictionary.randomWord();
+                String key = randomWord.firstKey();
+                Set<String> temp = randomWord.get(key);
+                List<String> def = new ArrayList<>(temp);
+                StyledDocument doc = resultTextPane.getStyledDocument();
+                SimpleAttributeSet setKey = new SimpleAttributeSet();
+                StyleConstants.setForeground(setKey, Color.RED);
+                StyleConstants.setFontSize(setKey, 40);
+                StyleConstants.setFontFamily(setKey, "Arial");
+                StyleConstants.setBold(setKey, true);
+                StyleConstants.setItalic(setKey, true);
+                try {
+                    doc.insertString(doc.getLength(), key, setKey);
+                    doc.insertString(doc.getLength(), "\n\n\n", null);
+                    doc.insertString(doc.getLength(), "  Definition:\n", null);
+                    for (String ele : def) {
+                        doc.insertString(doc.getLength(), "- ", null);
+                        doc.insertString(doc.getLength(), ele, null);
+                        doc.insertString(doc.getLength(), "\n", null);
+                    }
+                } catch (Exception err) {
+                    err.printStackTrace();
+                }
+            }
+        });
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(mainPanel, "page6");
+            }
+        });
+        return main;
+    }
+
+    private JPanel quizSlang() {
+        JPanel main = new JPanel(new BorderLayout());
+        JPanel topPanel = new JPanel(new FlowLayout());
+        JPanel bodyPanel = new JPanel(new BorderLayout());
+        JPanel bottomPanel = new JPanel(new FlowLayout());
+        //
+        // Top Panel
+        JLabel titleLabel = new JLabel("Slang Quiz", JLabel.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(15, 20, 10, 20));
+        topPanel.add(titleLabel);
+        // body
+        JPanel body1 = new JPanel(new BorderLayout());
+        JPanel body2 = new JPanel(new GridLayout(2, 2));
+        //
+        quizSlang = mainDictionary.quizSlang();
+        String questioString = quizSlang.firstKey();
+        List<String> answeStrings = quizSlang.get(questioString);
+        JButton[] answerButtons = new JButton[4];
+        //
+        JTextPane resultTextPane = new JTextPane();
+        resultTextPane.setPreferredSize(new Dimension());
+        resultTextPane.setEditable(false);
+        body1.add(resultTextPane, BorderLayout.CENTER);
+        body1.setBorder(BorderFactory.createEmptyBorder(25, 110, 300, 110));
+        //
+        StyledDocument doc = resultTextPane.getStyledDocument();
+        SimpleAttributeSet setKey = new SimpleAttributeSet();
+        StyleConstants.setForeground(setKey, Color.RED);
+        StyleConstants.setFontSize(setKey, 35);
+        StyleConstants.setFontFamily(setKey, "Arial");
+        StyleConstants.setBold(setKey, true);
+        StyleConstants.setItalic(setKey, true);
+        StyleConstants.setAlignment(new SimpleAttributeSet(), StyleConstants.ALIGN_CENTER);
+        try {
+            doc.insertString(doc.getLength(), "Question: What are definition of ", null);
+            doc.insertString(doc.getLength(), questioString, setKey);
+        } catch (Exception err) {
+            err.printStackTrace();
+        }
+        //
+        bodyPanel.add(body1, BorderLayout.CENTER);
+        bodyPanel.add(body2, BorderLayout.SOUTH);
+        // bottomPanel
+        JButton backButton = new JButton("Return");
+        bottomPanel.add(backButton);
+        //
+        main.add(topPanel, BorderLayout.PAGE_START);
+        main.add(bodyPanel, BorderLayout.CENTER);
+        main.add(bottomPanel, BorderLayout.PAGE_END);
+        //
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(mainPanel, "page6");
+            }
+        });
         return main;
     }
 
