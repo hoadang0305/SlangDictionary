@@ -1,5 +1,4 @@
 import java.util.List;
-import java.awt.RadialGradientPaint;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -163,10 +162,32 @@ public class Dictionary {
         return result;
     }
 
-    public static void main(String[] args) {
-        Dictionary slang = new Dictionary();
-        slang.readFileWord("slang.txt");
-        Dictionary check = slang.serchByDefine("it");
-        check.print();
+    public TreeMap<String, List<String>> quizDefine() {
+        TreeMap<String, List<String>> result = new TreeMap<>();
+        List<String> key = new ArrayList<>(dictionary.keySet());
+        Random random = new Random();
+        List<String> chooseKey = new ArrayList<>();
+        List<String> defList = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            int randIndex = random.nextInt(key.size());
+            String selectKey = key.get(randIndex);
+            chooseKey.add(selectKey);
+            Set<String> def = new HashSet<>(dictionary.get(selectKey));
+            StringBuilder stringBuilder = new StringBuilder();
+            for (String item : def) {
+                stringBuilder.append(item).append(", ");
+            }
+            String temp = stringBuilder.toString();
+
+            if (temp.endsWith(", ")) {
+                temp = temp.substring(0, temp.length() - 2);
+            }
+            defList.add(temp);
+        }
+        int chooseIndex = random.nextInt(4);
+        result.put(defList.get(chooseIndex), chooseKey);
+        // trả về một key bất kì
+        return result;
     }
+
 }

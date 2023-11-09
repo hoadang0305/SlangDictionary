@@ -228,6 +228,7 @@ $_$`Has money
 >.>`Suspicious| wary
 >//<`Embarrassed| blushing
 >3`Evil but happy| Hate
+>3<`icon| a cute kill
 >:(`Angry
 >:)`Evil Grin
 >:D`Scheming| Maniacal

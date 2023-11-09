@@ -28,6 +28,9 @@ public class SlangDictionary {
     DefaultListModel<String> listHistory = new DefaultListModel<>();
     TreeMap<String, Set<String>> randomWord = new TreeMap<>();
     TreeMap<String, List<String>> quizSlang = new TreeMap<>();
+    TreeMap<String, List<String>> quizDefine = new TreeMap<>();
+    String realAnswer;
+    int index = 0;
 
     public SlangDictionary() {
         mainDictionary = new Dictionary();
@@ -93,7 +96,7 @@ public class SlangDictionary {
         JPanel quizWord = quizSlang();
         mainPanel.add(quizWord, "page6_2");
 
-        JPanel quizDefine = createFunctionPage("Chức năng 6.3");
+        JPanel quizDefine = quizDefine();
         mainPanel.add(quizDefine, "page6_3");
 
         frame.add(mainPanel);
@@ -136,7 +139,17 @@ public class SlangDictionary {
             @Override
             public void actionPerformed(ActionEvent e) {
                 for (Map.Entry<String, Set<String>> entry : history.getDictionary().entrySet()) {
-                    listHistory.addElement(entry.getKey());
+                    StringBuilder stringBuilder = new StringBuilder();
+                    for (String item : entry.getValue()) {
+                        stringBuilder.append(item).append(", ");
+                    }
+                    String temp = stringBuilder.toString();
+
+                    if (temp.endsWith(", ")) {
+                        temp = temp.substring(0, temp.length() - 2);
+                    }
+                    listHistory.addElement(entry.getKey() + " : " + temp);
+
                 }
                 cardLayout.show(mainPanel, "page3");
             }
@@ -563,6 +576,7 @@ public class SlangDictionary {
 
         // bottomPanel
         JButton backButton = new JButton("Back to Menu");
+        JButton resetButton = new JButton("Reset History");
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -570,6 +584,20 @@ public class SlangDictionary {
                 cardLayout.show(mainPanel, "menu");
             }
         });
+        resetButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (history.getDictionary().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Can't reset the empty list", "Warning",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    listHistory.clear();
+                    history.clearDictionary();
+                    history.writeFileWord("history.txt");
+                }
+            }
+        });
+        bottomPanel.add(resetButton);
         bottomPanel.add(backButton);
         //
         main.add(topPanel, BorderLayout.PAGE_START);
@@ -1416,6 +1444,7 @@ public class SlangDictionary {
         JPanel topPanel = new JPanel(new FlowLayout());
         JPanel bodyPanel = new JPanel(new BorderLayout());
         JPanel bottomPanel = new JPanel(new FlowLayout());
+        JTextPane resultTextPane = new JTextPane();
         //
         // Top Panel
         JLabel titleLabel = new JLabel("Slang Quiz", JLabel.CENTER);
@@ -1428,29 +1457,164 @@ public class SlangDictionary {
         //
         quizSlang = mainDictionary.quizSlang();
         String questioString = quizSlang.firstKey();
+        Set<String> correctAns = new HashSet<>(mainDictionary.getDictionary().get(questioString));
+        StringBuilder stringBuilder = new StringBuilder();
+        for (String item : correctAns) {
+            stringBuilder.append(item).append(", ");
+        }
+        realAnswer = stringBuilder.toString();
+        realAnswer = realAnswer.substring(0, realAnswer.length() - 2);
+
         List<String> answeStrings = quizSlang.get(questioString);
-        JButton[] answerButtons = new JButton[4];
+        JButton answerButtons1 = new JButton(answeStrings.get(0));
+        JButton answerButtons2 = new JButton(answeStrings.get(1));
+        JButton answerButtons3 = new JButton(answeStrings.get(2));
+        JButton answerButtons4 = new JButton(answeStrings.get(3));
+        body2.add(answerButtons1);
+        body2.add(answerButtons2);
+        body2.add(answerButtons3);
+        body2.add(answerButtons4);
         //
-        JTextPane resultTextPane = new JTextPane();
+        answerButtons1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (realAnswer.compareTo(answerButtons1.getText()) == 0) {
+                    JOptionPane.showMessageDialog(null, "Correct Answer", "Notification",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Wrong answer, correct answer is " + realAnswer,
+                            "Notification",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+                resultTextPane.setText("");
+                answerButtons1.setText("");
+                answerButtons2.setText("");
+                answerButtons3.setText("");
+                answerButtons4.setText("");
+                quizSlang = mainDictionary.quizSlang();
+                String questioString = quizSlang.firstKey();
+                Set<String> correctAns = new HashSet<>(mainDictionary.getDictionary().get(questioString));
+                StringBuilder stringBuilder = new StringBuilder();
+                for (String item : correctAns) {
+                    stringBuilder.append(item).append(", ");
+                }
+                realAnswer = stringBuilder.toString();
+                realAnswer = realAnswer.substring(0, realAnswer.length() - 2);
+                resultTextPane.setText("What are definition of " + questioString);
+                List<String> answeStrings = quizSlang.get(questioString);
+                answerButtons1.setText(answeStrings.get(0));
+                answerButtons2.setText(answeStrings.get(1));
+                answerButtons3.setText(answeStrings.get(2));
+                answerButtons4.setText(answeStrings.get(3));
+            }
+        });
+        answerButtons2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (realAnswer.compareTo(answerButtons2.getText()) == 0) {
+                    JOptionPane.showMessageDialog(null, "Correct Answer", "Notification",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Wrong answer, correct answer is " + realAnswer,
+                            "Notification",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+                resultTextPane.setText("");
+                answerButtons1.setText("");
+                answerButtons2.setText("");
+                answerButtons3.setText("");
+                answerButtons4.setText("");
+                quizSlang = mainDictionary.quizSlang();
+                String questioString = quizSlang.firstKey();
+                Set<String> correctAns = new HashSet<>(mainDictionary.getDictionary().get(questioString));
+                StringBuilder stringBuilder = new StringBuilder();
+                for (String item : correctAns) {
+                    stringBuilder.append(item).append(", ");
+                }
+                realAnswer = stringBuilder.toString();
+                realAnswer = realAnswer.substring(0, realAnswer.length() - 2);
+                resultTextPane.setText("What are definition of " + questioString);
+                List<String> answeStrings = quizSlang.get(questioString);
+                answerButtons1.setText(answeStrings.get(0));
+                answerButtons2.setText(answeStrings.get(1));
+                answerButtons3.setText(answeStrings.get(2));
+                answerButtons4.setText(answeStrings.get(3));
+            }
+        });
+        answerButtons3.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (realAnswer.compareTo(answerButtons3.getText()) == 0) {
+                    JOptionPane.showMessageDialog(null, "Correct Answer", "Notification",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Wrong answer, correct answer is " + realAnswer,
+                            "Notification",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+                resultTextPane.setText("");
+                answerButtons1.setText("");
+                answerButtons2.setText("");
+                answerButtons3.setText("");
+                answerButtons4.setText("");
+                quizSlang = mainDictionary.quizSlang();
+                String questioString = quizSlang.firstKey();
+                Set<String> correctAns = new HashSet<>(mainDictionary.getDictionary().get(questioString));
+                StringBuilder stringBuilder = new StringBuilder();
+                for (String item : correctAns) {
+                    stringBuilder.append(item).append(", ");
+                }
+                realAnswer = stringBuilder.toString();
+                realAnswer = realAnswer.substring(0, realAnswer.length() - 2);
+                resultTextPane.setText("What are definition of " + questioString);
+                List<String> answeStrings = quizSlang.get(questioString);
+                answerButtons1.setText(answeStrings.get(0));
+                answerButtons2.setText(answeStrings.get(1));
+                answerButtons3.setText(answeStrings.get(2));
+                answerButtons4.setText(answeStrings.get(3));
+            }
+        });
+        answerButtons4.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (realAnswer.compareTo(answerButtons4.getText()) == 0) {
+                    JOptionPane.showMessageDialog(null, "Correct Answer", "Notification",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Wrong answer, correct answer is " + realAnswer,
+                            "Notification",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+                resultTextPane.setText("");
+                answerButtons1.setText("");
+                answerButtons2.setText("");
+                answerButtons3.setText("");
+                answerButtons4.setText("");
+                quizSlang = mainDictionary.quizSlang();
+                String questioString = quizSlang.firstKey();
+                Set<String> correctAns = new HashSet<>(mainDictionary.getDictionary().get(questioString));
+                StringBuilder stringBuilder = new StringBuilder();
+                for (String item : correctAns) {
+                    stringBuilder.append(item).append(", ");
+                }
+                realAnswer = stringBuilder.toString();
+                realAnswer = realAnswer.substring(0, realAnswer.length() - 2);
+                resultTextPane.setText("What are definition of " + questioString);
+                List<String> answeStrings = quizSlang.get(questioString);
+                answerButtons1.setText(answeStrings.get(0));
+                answerButtons2.setText(answeStrings.get(1));
+                answerButtons3.setText(answeStrings.get(2));
+                answerButtons4.setText(answeStrings.get(3));
+            }
+        });
+        //
+
         resultTextPane.setPreferredSize(new Dimension());
         resultTextPane.setEditable(false);
         body1.add(resultTextPane, BorderLayout.CENTER);
-        body1.setBorder(BorderFactory.createEmptyBorder(25, 110, 300, 110));
+        body1.setBorder(BorderFactory.createEmptyBorder(25, 110, 250, 110));
         //
-        StyledDocument doc = resultTextPane.getStyledDocument();
-        SimpleAttributeSet setKey = new SimpleAttributeSet();
-        StyleConstants.setForeground(setKey, Color.RED);
-        StyleConstants.setFontSize(setKey, 35);
-        StyleConstants.setFontFamily(setKey, "Arial");
-        StyleConstants.setBold(setKey, true);
-        StyleConstants.setItalic(setKey, true);
-        StyleConstants.setAlignment(new SimpleAttributeSet(), StyleConstants.ALIGN_CENTER);
-        try {
-            doc.insertString(doc.getLength(), "Question: What are definition of ", null);
-            doc.insertString(doc.getLength(), questioString, setKey);
-        } catch (Exception err) {
-            err.printStackTrace();
-        }
+        resultTextPane.setText("What are definition of " + questioString);
         //
         bodyPanel.add(body1, BorderLayout.CENTER);
         bodyPanel.add(body2, BorderLayout.SOUTH);
@@ -1471,24 +1635,241 @@ public class SlangDictionary {
         return main;
     }
 
-    private JPanel createFunctionPage(String functionTitle) {
-        JPanel functionPanel = new JPanel();
-        JButton backButton = new JButton("Quay lại Menu");
+    private JPanel quizDefine() {
+        JPanel main = new JPanel(new BorderLayout());
+        JPanel topPanel = new JPanel(new FlowLayout());
+        JPanel bodyPanel = new JPanel(new BorderLayout());
+        JPanel bottomPanel = new JPanel(new FlowLayout());
+        JTextPane resultTextPane = new JTextPane();
+        //
+        // Top Panel
+        JLabel titleLabel = new JLabel("Definition Quiz", JLabel.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(15, 20, 10, 20));
+        topPanel.add(titleLabel);
+        // body
+        JPanel body1 = new JPanel(new BorderLayout());
+        JPanel body2 = new JPanel(new GridLayout(2, 2));
+        //
+        quizDefine = mainDictionary.quizDefine();
+        String questioString = quizDefine.firstKey();
 
-        backButton.addActionListener(new ActionListener() {
+        List<String> answeStrings = quizDefine.get(questioString);
+        for (String ele : answeStrings) {
+            Set<String> def = mainDictionary.getDictionary().get(ele);
+            StringBuilder stringBuilder = new StringBuilder();
+            for (String item : def) {
+                stringBuilder.append(item).append(", ");
+            }
+            String temp = stringBuilder.toString();
+
+            if (temp.endsWith(", ")) {
+                temp = temp.substring(0, temp.length() - 2);
+            }
+            if (questioString.compareTo(temp) == 0)
+                realAnswer = ele;
+        }
+        JButton answerButtons1 = new JButton(answeStrings.get(0));
+        JButton answerButtons2 = new JButton(answeStrings.get(1));
+        JButton answerButtons3 = new JButton(answeStrings.get(2));
+        JButton answerButtons4 = new JButton(answeStrings.get(3));
+        body2.add(answerButtons1);
+        body2.add(answerButtons2);
+        body2.add(answerButtons3);
+        body2.add(answerButtons4);
+        //
+        answerButtons1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                cardLayout.show(mainPanel, "menu");
+
+                if (answerButtons1.getText().compareTo(realAnswer) == 0) {
+                    JOptionPane.showMessageDialog(null, "Correct Answer", "Notification",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Wrong answer, correct answer is " + realAnswer,
+                            "Notification",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+                resultTextPane.setText("");
+                answerButtons1.setText("");
+                answerButtons2.setText("");
+                answerButtons3.setText("");
+                answerButtons4.setText("");
+                quizDefine = mainDictionary.quizDefine();
+                String questioString = quizDefine.firstKey();
+                resultTextPane.setText("What is the Slang Word for '" + questioString + "'");
+                List<String> answeStrings = quizDefine.get(questioString);
+                for (String ele : answeStrings) {
+                    Set<String> def = mainDictionary.getDictionary().get(ele);
+                    StringBuilder stringBuilder = new StringBuilder();
+                    for (String item : def) {
+                        stringBuilder.append(item).append(", ");
+                    }
+                    String temp = stringBuilder.toString();
+
+                    if (temp.endsWith(", ")) {
+                        temp = temp.substring(0, temp.length() - 2);
+                    }
+                    if (questioString.compareTo(temp) == 0)
+                        realAnswer = ele;
+                }
+                answerButtons1.setText(answeStrings.get(0));
+                answerButtons2.setText(answeStrings.get(1));
+                answerButtons3.setText(answeStrings.get(2));
+                answerButtons4.setText(answeStrings.get(3));
+            }
+        });
+        //
+        answerButtons2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                if (answerButtons2.getText().compareTo(realAnswer) == 0) {
+                    JOptionPane.showMessageDialog(null, "Correct Answer", "Notification",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Wrong answer, correct answer is " + realAnswer,
+                            "Notification",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+                resultTextPane.setText("");
+                answerButtons1.setText("");
+                answerButtons2.setText("");
+                answerButtons3.setText("");
+                answerButtons4.setText("");
+                quizDefine = mainDictionary.quizDefine();
+                String questioString = quizDefine.firstKey();
+                resultTextPane.setText("What is the Slang Word for '" + questioString + "'");
+                List<String> answeStrings = quizDefine.get(questioString);
+                for (String ele : answeStrings) {
+                    Set<String> def = mainDictionary.getDictionary().get(ele);
+                    StringBuilder stringBuilder = new StringBuilder();
+                    for (String item : def) {
+                        stringBuilder.append(item).append(", ");
+                    }
+                    String temp = stringBuilder.toString();
+
+                    if (temp.endsWith(", ")) {
+                        temp = temp.substring(0, temp.length() - 2);
+                    }
+                    if (questioString.compareTo(temp) == 0)
+                        realAnswer = ele;
+                }
+                answerButtons1.setText(answeStrings.get(0));
+                answerButtons2.setText(answeStrings.get(1));
+                answerButtons3.setText(answeStrings.get(2));
+                answerButtons4.setText(answeStrings.get(3));
+            }
+        });
+        //
+        answerButtons3.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                if (answerButtons3.getText().compareTo(realAnswer) == 0) {
+                    JOptionPane.showMessageDialog(null, "Correct Answer", "Notification",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Wrong answer, correct answer is " + realAnswer,
+                            "Notification",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+                resultTextPane.setText("");
+                answerButtons1.setText("");
+                answerButtons2.setText("");
+                answerButtons3.setText("");
+                answerButtons4.setText("");
+                quizDefine = mainDictionary.quizDefine();
+                String questioString = quizDefine.firstKey();
+                resultTextPane.setText("What is the Slang Word for '" + questioString + "'");
+                List<String> answeStrings = quizDefine.get(questioString);
+                for (String ele : answeStrings) {
+                    Set<String> def = mainDictionary.getDictionary().get(ele);
+                    StringBuilder stringBuilder = new StringBuilder();
+                    for (String item : def) {
+                        stringBuilder.append(item).append(", ");
+                    }
+                    String temp = stringBuilder.toString();
+
+                    if (temp.endsWith(", ")) {
+                        temp = temp.substring(0, temp.length() - 2);
+                    }
+                    if (questioString.compareTo(temp) == 0)
+                        realAnswer = ele;
+                }
+                answerButtons1.setText(answeStrings.get(0));
+                answerButtons2.setText(answeStrings.get(1));
+                answerButtons3.setText(answeStrings.get(2));
+                answerButtons4.setText(answeStrings.get(3));
+            }
+        });
+        //
+        answerButtons4.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                if (answerButtons4.getText().compareTo(realAnswer) == 0) {
+                    JOptionPane.showMessageDialog(null, "Correct Answer", "Notification",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Wrong answer, correct answer is " + realAnswer,
+                            "Notification",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+                resultTextPane.setText("");
+                answerButtons1.setText("");
+                answerButtons2.setText("");
+                answerButtons3.setText("");
+                answerButtons4.setText("");
+                quizDefine = mainDictionary.quizDefine();
+                String questioString = quizDefine.firstKey();
+                resultTextPane.setText("What is the Slang Word for '" + questioString + "'");
+                List<String> answeStrings = quizDefine.get(questioString);
+                for (String ele : answeStrings) {
+                    Set<String> def = mainDictionary.getDictionary().get(ele);
+                    StringBuilder stringBuilder = new StringBuilder();
+                    for (String item : def) {
+                        stringBuilder.append(item).append(", ");
+                    }
+                    String temp = stringBuilder.toString();
+
+                    if (temp.endsWith(", ")) {
+                        temp = temp.substring(0, temp.length() - 2);
+                    }
+                    if (questioString.compareTo(temp) == 0)
+                        realAnswer = ele;
+                }
+                answerButtons1.setText(answeStrings.get(0));
+                answerButtons2.setText(answeStrings.get(1));
+                answerButtons3.setText(answeStrings.get(2));
+                answerButtons4.setText(answeStrings.get(3));
             }
         });
 
-        functionPanel.setLayout(new BorderLayout());
-        JLabel titleLabel = new JLabel(functionTitle);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        functionPanel.add(titleLabel, BorderLayout.NORTH);
-        functionPanel.add(backButton, BorderLayout.SOUTH);
-
-        return functionPanel;
+        resultTextPane.setPreferredSize(new Dimension());
+        resultTextPane.setEditable(false);
+        body1.add(resultTextPane, BorderLayout.CENTER);
+        body1.setBorder(BorderFactory.createEmptyBorder(25, 110, 250, 110));
+        //
+        resultTextPane.setText("What is the Slang Word for '" + questioString + "'");
+        //
+        bodyPanel.add(body1, BorderLayout.CENTER);
+        bodyPanel.add(body2, BorderLayout.SOUTH);
+        // bottomPanel
+        JButton backButton = new JButton("Return");
+        bottomPanel.add(backButton);
+        //
+        main.add(topPanel, BorderLayout.PAGE_START);
+        main.add(bodyPanel, BorderLayout.CENTER);
+        main.add(bottomPanel, BorderLayout.PAGE_END);
+        //
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(mainPanel, "page6");
+            }
+        });
+        return main;
     }
 
     public static void main(String[] args) {
