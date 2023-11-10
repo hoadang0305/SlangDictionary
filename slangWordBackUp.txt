@@ -7634,6 +7634,7 @@ ZZZ`Sleepy| tired| bored
 ^_^`Happiness| satisfied
 ^_~`Wink
 ^~^`Mischievous Smile
+test`test case| đây là test
 test1`a
 test2`b
 |O|`LOL
