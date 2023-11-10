@@ -33,7 +33,6 @@ public class Dictionary {
                     }
                 }
             }
-            System.out.print("read completed!");
         } catch (Exception e) {
             e.printStackTrace();
         }
