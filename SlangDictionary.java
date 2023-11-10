@@ -108,7 +108,7 @@ public class SlangDictionary {
         JPanel menuPanel = new JPanel(new BorderLayout());
         JLabel titleLabel = new JLabel("Slang Dictionary", JLabel.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 45));
-        titleLabel.setForeground(Color.CYAN);
+        titleLabel.setForeground(Color.PINK);
         titleLabel.setBorder(BorderFactory.createEmptyBorder(30, 0, 10, 0));
         menuPanel.add(titleLabel, BorderLayout.NORTH);
         //
