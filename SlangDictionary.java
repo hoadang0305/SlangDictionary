@@ -939,6 +939,12 @@ public class SlangDictionary {
                     input.setText("");
                     listSuggest.clear();
                     resultTextPane.setText("");
+                } else if (inputDef.getText() == " ") {
+                    JOptionPane.showMessageDialog(null, "Can't change the definition into empty!!!", "Warning",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    input.setText("");
+                    listSuggest.clear();
+                    resultTextPane.setText("");
                 } else {
                     String newDef = inputDef.getText();
                     String[] newDefStrings = newDef.split("\\,");
